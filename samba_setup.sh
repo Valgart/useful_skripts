@@ -27,7 +27,7 @@ fi
 # Passwort für den neuen User interaktiv setzen (mit Wiederholung bei Tippfehler)
 while true; do
   echo "Setze Passwort für $USERNAME:"
-  passwd "$USERNAME"
+  passwd "$USERNAME" < /dev/tty
   if [[ $? -eq 0 ]]; then
     break
   else
@@ -65,7 +65,7 @@ fi
 # Samba-Passwort für den neuen User interaktiv setzen (mit Wiederholung bei Tippfehler)
 while true; do
   echo "Lege Samba-Passwort für $USERNAME an:"
-  smbpasswd -a "$USERNAME"
+  smbpasswd -a "$USERNAME" < /dev/tty
   if [[ $? -eq 0 ]]; then
     break
   else

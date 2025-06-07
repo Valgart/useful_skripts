@@ -1,24 +1,15 @@
 #!/bin/bash
-
-# Sicherstellen, dass das Skript mit root-Rechten läuft
 if [[ $EUID -ne 0 ]]; then
   echo "Bitte mit sudo oder als root ausführen."
   exit 1
 fi
 
 # System aktualisieren
-sudo apt update
-sudo apt upgrade -y
+apt update
+apt upgrade -y
 
-# Nach Username fragen
-read -p "Gib den neuen Benutzernamen ein: " USERNAME
-
-# User anlegen und Passwort setzen
-useradd -m "$USERNAME"
-if [[ $? -ne 0 ]]; then
-  echo "Fehler beim Anlegen des Benutzers."
-  exit 1
-fi
+# Username vom Terminal einlesen
+read -p "Gib den neuen Benutzernamen ein: " USERNAME < /dev/tty
 
 echo "Setze Passwort für $USERNAME:"
 passwd "$USERNAME"

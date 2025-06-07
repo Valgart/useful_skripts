@@ -1,4 +1,6 @@
 #!/bin/bash
+
+# Sicherstellen, dass das Skript mit Root-Rechten läuft
 if [[ $EUID -ne 0 ]]; then
   echo "Bitte mit sudo oder als root ausführen."
   exit 1
@@ -8,11 +10,18 @@ fi
 apt update
 apt upgrade -y
 
-# Username vom Terminal einlesen
+# Username direkt vom Terminal einlesen
 read -p "Gib den neuen Benutzernamen ein: " USERNAME < /dev/tty
 
+# User anlegen und Passwort setzen
+useradd -m "$USERNAME"
+if [[ $? -ne 0 ]]; then
+  echo "Fehler beim Anlegen des Benutzers."
+  exit 1
+fi
+
 echo "Setze Passwort für $USERNAME:"
-passwd "$USERNAME"
+passwd "$USERNAME" < /dev/tty
 
 # Verzeichnisse anlegen und Berechtigungen setzen
 mkdir -p /shares/Daten
@@ -44,6 +53,6 @@ fi
 
 # Samba-Passwort für den neuen User setzen
 echo "Lege Samba-Passwort für $USERNAME an:"
-smbpasswd -a "$USERNAME"
+smbpasswd -a "$USERNAME" < /dev/tty
 
 echo "Fertig! Der Benutzer $USERNAME wurde angelegt und Samba ist konfiguriert."

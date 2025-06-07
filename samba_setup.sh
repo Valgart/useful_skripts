@@ -67,4 +67,4 @@ DEBIAN_FRONTEND=noninteractive dpkg-reconfigure tzdata
 IP_ADDR=$(hostname -I | awk '{print $1}')
 echo "Die primäre IP-Adresse dieses Servers ist: $IP_ADDR"
 
-echo "Fertig! Der Benutzer $USERNAME wurde angelegt, Samba konfiguriert, Zeitzone gesetzt und IP angezeigt."
+echo "Fertig! Der Benutzer $USERNAME wurde angelegt, Samba konfiguriert, Zeitzone gesetzt und IP angezeigt!"

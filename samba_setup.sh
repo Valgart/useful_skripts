@@ -6,12 +6,16 @@ if [[ $EUID -ne 0 ]]; then
   exit 1
 fi
 
+# Erwartet den Usernamen als ersten Parameter
+if [[ -z "$1" ]]; then
+  echo "Usage: $0 <username>"
+  exit 1
+fi
+USERNAME="$1"
+
 # System aktualisieren
 apt update
 apt upgrade -y
-
-# Username direkt vom Terminal einlesen
-read -p "Gib den neuen Benutzernamen ein: " USERNAME < /dev/tty
 
 # User anlegen und Passwort setzen
 useradd -m "$USERNAME"
@@ -21,7 +25,7 @@ if [[ $? -ne 0 ]]; then
 fi
 
 echo "Setze Passwort für $USERNAME:"
-passwd "$USERNAME" < /dev/tty
+passwd "$USERNAME"
 
 # Verzeichnisse anlegen und Berechtigungen setzen
 mkdir -p /shares/Daten
@@ -53,6 +57,6 @@ fi
 
 # Samba-Passwort für den neuen User setzen
 echo "Lege Samba-Passwort für $USERNAME an:"
-smbpasswd -a "$USERNAME" < /dev/tty
+smbpasswd -a "$USERNAME"
 
 echo "Fertig! Der Benutzer $USERNAME wurde angelegt und Samba ist konfiguriert."

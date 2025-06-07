@@ -17,15 +17,23 @@ USERNAME="$1"
 apt update
 apt upgrade -y
 
-# User anlegen und Passwort setzen
+# User anlegen
 useradd -m "$USERNAME"
 if [[ $? -ne 0 ]]; then
   echo "Fehler beim Anlegen des Benutzers."
   exit 1
 fi
 
-echo "Setze Passwort für $USERNAME:"
-passwd "$USERNAME"
+# Passwort für den neuen User interaktiv setzen (mit Wiederholung bei Tippfehler)
+while true; do
+  echo "Setze Passwort für $USERNAME:"
+  passwd "$USERNAME"
+  if [[ $? -eq 0 ]]; then
+    break
+  else
+    echo "Passwörter stimmen nicht überein. Bitte erneut versuchen."
+  fi
+done
 
 # Verzeichnisse anlegen und Berechtigungen setzen
 mkdir -p /shares/Daten
@@ -36,7 +44,6 @@ apt install samba samba-common-bin -y
 
 # Samba-Konfiguration anpassen
 SMB_CONF="/etc/samba/smb.conf"
-
 # server signing in [global] einfügen (falls nicht bereits vorhanden)
 grep -q "^ *server signing" "$SMB_CONF" || sed -i '/\[global\]/a \
     server signing = auto\
@@ -55,8 +62,23 @@ if ! grep -q "^\[Daten\]" "$SMB_CONF"; then
 EOF
 fi
 
-# Samba-Passwort für den neuen User setzen
-echo "Lege Samba-Passwort für $USERNAME an:"
-smbpasswd -a "$USERNAME"
+# Samba-Passwort für den neuen User interaktiv setzen (mit Wiederholung bei Tippfehler)
+while true; do
+  echo "Lege Samba-Passwort für $USERNAME an:"
+  smbpasswd -a "$USERNAME"
+  if [[ $? -eq 0 ]]; then
+    break
+  else
+    echo "Passwörter stimmen nicht überein. Bitte erneut versuchen."
+  fi
+done
 
-echo "Fertig! Der Benutzer $USERNAME wurde angelegt und Samba ist konfiguriert."
+# Zeitzone auf Europe/Berlin setzen
+echo "Europe/Berlin" > /etc/timezone
+DEBIAN_FRONTEND=noninteractive dpkg-reconfigure tzdata
+
+# IP-Adresse anzeigen
+IP_ADDR=$(hostname -I | awk '{print $1}')
+echo "Die primäre IP-Adresse dieses Servers ist: $IP_ADDR"
+
+echo "Fertig! Der Benutzer $USERNAME wurde angelegt, Samba konfiguriert, Zeitzone gesetzt und IP angezeigt."

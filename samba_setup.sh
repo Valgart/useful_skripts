@@ -6,6 +6,10 @@ if [[ $EUID -ne 0 ]]; then
   exit 1
 fi
 
+# System aktualisieren
+sudo apt update
+sudo apt upgrade -y
+
 # Nach Username fragen
 read -p "Gib den neuen Benutzernamen ein: " USERNAME
 
@@ -24,7 +28,6 @@ mkdir -p /shares/Daten
 chmod 777 /shares/Daten
 
 # Samba installieren
-apt update
 apt install samba samba-common-bin -y
 
 # Samba-Konfiguration anpassen
